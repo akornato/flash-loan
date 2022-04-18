@@ -44,16 +44,4 @@ contract FlashLoan {
 
         return true;
     }
-
-    function run(
-        address aavePoolAddressProvider,
-        address asset,
-        uint256 amount,
-        bytes calldata params
-    ) external {
-        IPool pool = IPool(
-            IPoolAddressesProvider(aavePoolAddressProvider).getPool()
-        );
-        pool.flashLoanSimple(address(this), asset, amount, params, 0);
-    }
 }
