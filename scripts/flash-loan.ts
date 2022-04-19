@@ -31,8 +31,11 @@ const impersonatedTokenTransfer = async ({
 async function main() {
   const poolAddressProviderAddress =
     "0xa97684ead0e402dC232d5A977953DF7ECBaB3CDb";
-  const daiTokenAddress = "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1";
-  const daiTokenHolder = "0x0C249eF4592869a6bF8195d90de948BE2b7c2744";
+  const arbitrumDAI = "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1";
+  const arbitrumDAItokenHolder = "0x0C249eF4592869a6bF8195d90de948BE2b7c2744";
+  const arbitrumUSDT = "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9";
+  const arbitrumUSDC = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8";
+  const swapRouter = "0xE592427A0AEce92De3Edee1F18E0157C05861564";
   const amountToLend = ethers.utils.parseEther("1");
 
   const FlashLoan = await ethers.getContractFactory("FlashLoan");
@@ -47,24 +50,24 @@ async function main() {
   const poolAddress = await poolAddressProvider.getPool();
   const pool = await ethers.getContractAt("IPool", poolAddress);
   const premium = await pool.FLASHLOAN_PREMIUM_TOTAL();
-  // contrary to Aave documentation, FLASHLOAN_PREMIUM_TOTAL is expressed as a fraction of 10000 rather than percentages
+  // FLASHLOAN_PREMIUM_TOTAL is expressed as a fraction of 10000
   const premiumAmount = amountToLend.mul(premium).div(10000);
 
   await impersonatedTokenTransfer({
-    token: daiTokenAddress,
-    from: daiTokenHolder,
+    token: arbitrumDAI,
+    from: arbitrumDAItokenHolder,
     to: flashLoan.address,
-    amount: premiumAmount,
+    amount: amountToLend.add(premiumAmount),
   });
 
   const paramsEncoded = ethers.utils.defaultAbiCoder.encode(
-    ["address", "uint256"],
-    ["0xbFEFD48aAB2EBE3671eF3A6a6711f7aB3A069C3F", 15]
+    ["address", "address", "address"],
+    [swapRouter, arbitrumUSDT, arbitrumUSDC]
   );
 
   const txFlashLoan = await pool.flashLoanSimple(
     flashLoan.address,
-    daiTokenAddress,
+    arbitrumDAI,
     amountToLend,
     paramsEncoded,
     0
