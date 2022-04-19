@@ -33,6 +33,7 @@ async function main() {
     "0xa97684ead0e402dC232d5A977953DF7ECBaB3CDb";
   const daiTokenAddress = "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1";
   const daiTokenHolder = "0x0C249eF4592869a6bF8195d90de948BE2b7c2744";
+  const amountToLend = ethers.utils.parseEther("1");
 
   const FlashLoan = await ethers.getContractFactory("FlashLoan");
   const flashLoan = await FlashLoan.deploy();
@@ -47,7 +48,7 @@ async function main() {
   const pool = await ethers.getContractAt("IPool", poolAddress);
   const premium = await pool.FLASHLOAN_PREMIUM_TOTAL();
   // contrary to Aave documentation, FLASHLOAN_PREMIUM_TOTAL is expressed as a fraction of 10000 rather than percentages
-  const premiumAmount = ethers.utils.parseEther("1").mul(premium).div(10000);
+  const premiumAmount = amountToLend.mul(premium).div(10000);
 
   await impersonatedTokenTransfer({
     token: daiTokenAddress,
@@ -64,7 +65,7 @@ async function main() {
   const txFlashLoan = await pool.flashLoanSimple(
     flashLoan.address,
     daiTokenAddress,
-    ethers.utils.parseEther("1"), // amount
+    amountToLend,
     paramsEncoded,
     0
   );
