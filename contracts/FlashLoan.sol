@@ -105,10 +105,4 @@ contract FlashLoan {
             console.log("Profit");
             console.log(arbitragedAmount - borrowedAmount - premium);
         } else {
-            console.log("Loss");
-            console.log(borrowedAmount + premium - arbitragedAmount);
-        }
-
-        return true;
-    }
-}
+            console.log("Loss
