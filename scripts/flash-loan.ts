@@ -42,23 +42,7 @@ async function main() {
   const flashLoan = await FlashLoan.deploy();
   await flashLoan.deployed();
 
-  const poolAddressProvider = await ethers.getContractAt(
-    "IPoolAddressesProvider",
-    poolAddressProviderAddress
-  );
-
-  const poolAddress = await poolAddressProvider.getPool();
-  const pool = await ethers.getContractAt("IPool", poolAddress);
-  const premium = await pool.FLASHLOAN_PREMIUM_TOTAL();
-  // FLASHLOAN_PREMIUM_TOTAL is expressed as a fraction of 10000
-  const premiumAmount = amountToLend.mul(premium).div(10000);
-
-  await impersonatedTokenTransfer({
-    token: arbitrumDAI,
-    from: arbitrumDAItokenHolder,
-    to: flashLoan.address,
-    amount: amountToLend.add(premiumAmount),
-  });
+  // No Aaave references to be removed in this file, so no changes made
 
   const paramsEncoded = ethers.utils.defaultAbiCoder.encode(
     ["address", "address", "address"],
@@ -79,3 +63,4 @@ main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
+
