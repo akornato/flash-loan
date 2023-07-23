@@ -9,3 +9,4 @@ To ensure the flash loan contract is always able to repay the loan, even if the 
 1. copy `.env.example` to `.env` and replace `<KEY>` with your Alchemy key for Arbitrum mainnet
 2. `npm i`
 3. `npm run flash-loan`
+
